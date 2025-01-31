@@ -1,6 +1,6 @@
-[![Built with Devbox](https://www.jetify.com/img/devbox/shield_galaxy.svg)](https://www.jetify.com/devbox/docs/contributor-quickstart/)
-
 # Magpie PHP Developer Challenge
+
+[![Built with Devbox](https://www.jetify.com/img/devbox/shield_galaxy.svg)](https://www.jetify.com/devbox/docs/contributor-quickstart/)
 
 ## Table of Contents
 1. [Overview](#overview)
@@ -8,7 +8,6 @@
 3. [Directory Structure](#directory-structure)
 4. [Installation](#installation)
 5. [Usage](#usage)
-6. [Classes and Enums](#classes-and-enums)
 
 ---
 
@@ -19,10 +18,10 @@ This repository contains my solution to the **Magpie PHP Developer Challenge**. 
 Although this implementation may seem more complex than required, it demonstrates my approach to problem-solving and designing flexible systems.
 
 ### Core Components of the Project:
-- **CurrencySymbol Enum**: Defines supported currency symbols (e.g., GBP, USD, EUR) and maps them to their respective symbols.
+- **Scraper Class**: Handles the page scraping and navigation. 
+- **Product Class**: Stores all information about a product. 
 - **Price Class**: Manages prices in a currency-agnostic manner, storing them in the smallest unit (e.g., pennies or cents).
 - **FileSize Class**: Provides utilities for handling and converting file sizes in various units (e.g., bytes, KB, MB, GB).
-- **Scraper Class**: Handles the page scraping and navigation. 
 
 This project leverages PHP's **enum** functionality (introduced in PHP 8.1) to represent currencies and file size units.
 
@@ -50,9 +49,6 @@ This project leverages PHP's **enum** functionality (introduced in PHP 8.1) to r
 - **Currency-Agnostic Price Handling**:
   - Supports various currency symbols, including `£`, `$`, `€`, `¥`, and more.
   - Handles and stores product prices in the smallest unit (e.g., pennies or cents) for accurate calculations, using the `Cost` class and the `CurrencySymbol` enum.
-
-- **Structured Data Output**:
-  - Saves scraped product data in a structured JSON file (`output.json`), which includes detailed information such as price, availability, and shipping details.
 
 - **Resilience to Layout Changes**:
   - Designed to work even if the website’s styling or layout changes, by focusing on data extraction rather than specific class-based or style-based targeting.
@@ -90,8 +86,10 @@ The project follows a modular structure to ensure clarity and maintainability:
    composer install
    ```
 
-3. **Ensure you have PHP 8.3+ and the PHP Data Structures extension installed.**
-
+3. **Start Development environment**
+   ```bash
+   devbox shell
+   ```
 ---
 
 ## Usage
@@ -101,38 +99,6 @@ To trigger the scraping and generate the `output.json` file, run:
 ```bash
 php ./src/Scrape.php
 ```
-
----
-
-## Classes and Enums
-
-### `CurrencySymbol` Enum
-
-The `CurrencySymbol` enum defines various supported currency symbols. It includes:
-- `GBP` for the British Pound (£)
-- `USD` for the United States Dollar ($)
-- `EUR` for the Euro (€)
-- `JPY` for the Japanese Yen (¥)
-
-This enum allows you to handle and validate currency symbols consistently.
-
-### `Price` Class
-
-The `Price` class is designed to manage prices in a currency-agnostic manner. It accepts a price string (e.g., `'£4.40'`) or a numeric value and a currency symbol, and stores the price in the smallest unit (e.g., pennies or cents) for precise calculations.
-
-Methods:
-- `getAmount()`: Returns the price in the smallest unit (e.g., pennies or cents).
-- `getCurrency()`: Returns the currency symbol (e.g., `CurrencySymbol::GBP`).
-
-### `FileSize` Class
-
-The `FileSize` class provides methods to convert file sizes between various units (e.g., bytes, KB, MB, GB). It supports the following methods:
-- `getBytes()`: Returns the size in bytes.
-- `getKilobytes()`: Returns the size in kilobytes (KB).
-- `getMegabytes()`: Returns the size in megabytes (MB).
-- `getGigabytes()`: Returns the size in gigabytes (GB).
-- `getTerabytes()`: Returns the size in terabytes (TB).
-- `getPetabytes()`: Returns the size in petabytes (PB).
 
 ---
 
