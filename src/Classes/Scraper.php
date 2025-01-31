@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use App\Classes\ScrapeHelper;
 use App\Classes\FileSize;
 use App\Classes\Product;
+use App\Classes\Cost;
 
 class Scraper
 {
@@ -70,12 +71,12 @@ class Scraper
             'title' => $node->filter('.product-name')->text('No title found'),
             'price' => $this->extractPrice($node),
             'imageUrl' => $node->filter('img')->image()->getUri(),
-            'capacityMB' => (new FileSize($node->filter('.product-capacity')->text('No capacity found')))->getMegabytes(),
+            'capacity' => new FileSize($node->filter('.product-capacity')->text('No capacity found')),
             'colour' => strtolower($productVariation->attr('data-colour')),
             'availabilityText' => $this->extractAvailabilityText($node),
             'isAvailable' => $this->isProductAvailable($node),
             'shippingText' => '',
-            'shippingDate' => '',
+            'shippingDate' => null,
         ];
 
         // Extract shipping information
@@ -87,9 +88,15 @@ class Scraper
     /**
      * Extract product price from the node.
      */
-    private function extractPrice(Crawler $node): float
+    private function extractPrice(Crawler $node): Cost
     {
-        return (float) preg_replace('/[^\d\.]+/', '', $node->filterXPath('//*[contains(text(), "£")]')->text('No price found'));
+        $price = mb_convert_encoding(
+            string: $node->filterXPath('//*[contains(text(), "£")]')->text('No price found'),
+            from_encoding: 'UTF-8',
+            to_encoding: 'UTF-8'
+        );
+
+        return new Cost($price);
     }
 
     /**
@@ -106,7 +113,8 @@ class Scraper
      */
     private function isProductAvailable(Crawler $node): bool
     {
-        return $this->extractAvailabilityText($node) === 'In Stock';
+        $prefix = 'In Stock';
+        return substr($this->extractAvailabilityText($node), 0, strlen($prefix)) === $prefix;
     }
 
     /**
@@ -124,14 +132,14 @@ class Scraper
         //
         // It also optionally captures a date following these phrases, such as specific 
         // delivery dates or times (e.g., "2025-02-05" or "tomorrow").
-        $shippingTextRegex = '/((?:(?:Free\s)?Deliver[y|s](?:\sfrom|\sby)?|Order within \d hours and have it|Available on|Free Shipping[\s]?|Unavailable for delivery\s?)(?:\s(.+))?)/';
+        $shippingTextRegex = '/(?:(?:Free\s)?Deliver[y|s](?:\sfrom|\sby)?|Order within \d hours and have it|Available on|Free Shipping[\s]?|Unavailable for delivery\s?)(?:\s(.+))?/';
 
         // Search for shipping text using regex
         $node->each(function (Crawler $subnode) use ($shippingTextRegex, &$productData) {
             if (preg_match($shippingTextRegex, $subnode->text(), $matches)) {
                 $productData['shippingText'] = $matches[0];
                 if (!empty($matches[1])) {
-                    $productData['shippingDate'] = Carbon::createFromTimestamp(strtotime($matches[1]))->toDateString();
+                    $productData['shippingDate'] = Carbon::createFromTimestamp(strtotime($matches[1]));
                 }
             }
         });
@@ -142,8 +150,7 @@ class Scraper
      */
     private function saveToJson(): void
     {
-        var_dump($this->products->toArray());
         // Save the products collection as a JSON file
-        file_put_contents('output.json', json_encode($this->products->toArray()));
+        file_put_contents('output.json', json_encode($this->products->toArray(), JSON_PRETTY_PRINT));
     }
 }

@@ -6,15 +6,19 @@ use App\Enums\FileSizeUnit;
 
 class FileSize
 {
-    private float $sizeInBytes;
+    /**
+     * The size of the file in bytes. 
+     * This property is readonly to ensure immutability after initialization.
+     */
+    private readonly float $sizeInBytes;
 
     /**
-     * Constructor accepts either a size string (e.g., '2 GB') or size and unit.
+     * Constructor accepts either a size string (e.g., '2 GB', '4MB') or size and unit.
      * 
-     * @param string|float $size
-     * @param FileSizeUnit|null $unit
+     * @param string|float $size The size of the file (string or float).
+     * @param FileSizeUnit|null $unit The unit of the file size (optional). Defaults to bytes if not provided.
      */
-    public function __construct($size, ?FileSizeUnit $unit = null)
+    public function __construct(string|float $size, ?FileSizeUnit $unit = null)
     {
         if (is_string($size)) {
             // Parse the string format like "2 GB"
@@ -27,6 +31,10 @@ class FileSize
 
     /**
      * Parse a size string (e.g., "2 GB") and initialize the size in bytes.
+     *
+     * @param string $sizeString The size string to parse (e.g., "2 GB").
+     * 
+     * @throws \InvalidArgumentException if the size string format is invalid.
      */
     private function parseSizeString(string $sizeString): void
     {
@@ -50,6 +58,11 @@ class FileSize
 
     /**
      * Convert a size and unit to bytes.
+     *
+     * @param float $size The size value.
+     * @param FileSizeUnit $unit The unit of the size (e.g., KB, MB, GB).
+     * 
+     * @return float The size in bytes.
      */
     private function convertToBytes(float $size, FileSizeUnit $unit): float
     {
@@ -58,6 +71,8 @@ class FileSize
 
     /**
      * Return the size in bytes.
+     *
+     * @return float The size in bytes.
      */
     public function getBytes(): float
     {
@@ -66,6 +81,8 @@ class FileSize
 
     /**
      * Return the size in KB.
+     *
+     * @return float The size in kilobytes.
      */
     public function getKilobytes(): float
     {
@@ -74,6 +91,8 @@ class FileSize
 
     /**
      * Return the size in MB.
+     *
+     * @return float The size in megabytes.
      */
     public function getMegabytes(): float
     {
@@ -82,6 +101,8 @@ class FileSize
 
     /**
      * Return the size in GB.
+     *
+     * @return float The size in gigabytes.
      */
     public function getGigabytes(): float
     {
@@ -90,6 +111,8 @@ class FileSize
 
     /**
      * Return the size in TB.
+     *
+     * @return float The size in terabytes.
      */
     public function getTerabytes(): float
     {
@@ -98,6 +121,8 @@ class FileSize
 
     /**
      * Return the size in PB.
+     *
+     * @return float The size in petabytes.
      */
     public function getPetabytes(): float
     {
@@ -105,10 +130,12 @@ class FileSize
     }
 
     /**
-     * Return a human-readable string representation (e.g., "2 GB").
+     * Return a human-readable string representation (e.g., "32000 MB").
+     *
+     * @return string The human-readable file size string.
      */
     public function __toString(): string
     {
-        return $this->getGigabytes() . ' GB';
+        return $this->getMegabytes() . ' MB';
     }
 }
