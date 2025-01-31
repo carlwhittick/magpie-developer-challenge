@@ -8,6 +8,7 @@ use App\Classes\ScrapeHelper;
 use App\Classes\FileSize;
 use App\Classes\Product;
 use App\Classes\Cost;
+use App\Enums\CurrencySymbol;
 
 class Scraper
 {
@@ -90,11 +91,16 @@ class Scraper
      */
     private function extractPrice(Crawler $node): Cost
     {
-        $price = mb_convert_encoding(
-            string: $node->filterXPath('//*[contains(text(), "£")]')->text('No price found'),
-            from_encoding: 'UTF-8',
-            to_encoding: 'UTF-8'
-        );
+        $path = '//*[';
+        foreach (CurrencySymbol::cases() as $i => $currencySymbol) {
+            if ($i > 0) {
+                $path .= ' or ';
+            }
+            $path .= 'contains(text(), "' . $currencySymbol->value . '")';
+        }
+        $path .= ']';
+
+        $price = $node->filterXPath($path)->text('No price found');
 
         return new Cost($price);
     }
