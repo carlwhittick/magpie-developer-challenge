@@ -4,7 +4,9 @@
   "require": {
     "symfony/dom-crawler": "^5.2",
     "guzzlehttp/guzzle": "^7.2",
-    "symfony/css-selector": "^5.2"
+    "symfony/css-selector": "^5.2",
+    "php-ds/php-ds": "^1.5",
+    "nesbot/carbon": "^3.8"
   },
   "autoload": {
     "psr-4": {
