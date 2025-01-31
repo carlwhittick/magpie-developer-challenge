@@ -1,6 +1,6 @@
-# Magpie PHP Developer Challenge
-
 [![Built with Devbox](https://www.jetify.com/img/devbox/shield_galaxy.svg)](https://www.jetify.com/devbox/docs/contributor-quickstart/)
+
+# Magpie PHP Developer Challenge
 
 ## Table of Contents
 1. [Overview](#overview)
