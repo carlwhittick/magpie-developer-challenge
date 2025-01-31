@@ -66,6 +66,7 @@ The project follows a modular structure to ensure clarity and maintainability:
     Price.php            # Class for handling prices in various currencies
     ScrapeHelper.php     # Helper class for fetching documents
     Product.php          # Object for storing product information
+    Scraper.php          # Main scraper class       
   /Enums
     CurrencySymbol.php   # Enum for currency symbols (GBP, USD, EUR, etc.)
     FileSizeUnit.php     # Enum for file size units (B, KB, MB, GB, etc.)
