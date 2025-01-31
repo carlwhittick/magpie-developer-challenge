@@ -1,5 +1,5 @@
 /vendor/
 .idea/
 devbox.d
-devbox.log
+devbox.lock
 output.json
