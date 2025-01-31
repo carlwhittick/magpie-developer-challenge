@@ -33,29 +33,38 @@ class Scrape
         file_put_contents('output.json', json_encode($this->products));
     }
 
-    private function convertToBytes(string $from): ?int
+    private function formatBytes(string $from): int
     {
         $units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
-        $number = substr($from, 0, -2);
-        $suffix = strtoupper(substr($from, -2));
 
-        //B or no suffix
+        $numberRaw = substr($from, 0, -2);
+        $numberTrimmed = trim($numberRaw);
+        $number = $numberTrimmed;
+
+        $suffixRaw = substr($from, -2);
+        $uppercaseSuffix = strtoupper($suffixRaw);
+        $suffix = $uppercaseSuffix;
+
         if (is_numeric(substr($suffix, 0, 1))) {
-            return preg_replace('/[^\d]/', '', $from);
+            return (int) preg_replace('/[^\d]/', '', $from);
         }
 
         $exponent = array_flip($units)[$suffix] ?? null;
         if ($exponent === null) {
-            return null;
+            return -1;
         }
 
         return $number * (1000 ** $exponent);
     }
 
+    private function formatMegabytes(string $from): int
+    {
+        return $this->formatBytes($from) / 1000 / 1000;
+    }
+
     private function scrapeProducts($document)
     {
         $products = $document->filter('#products .product');
-
 
         $products->each(function (Crawler $node) {
             $node->filterXPath('//*[@data-colour]')->each(function (Crawler $productVariation) use ($node) {
@@ -71,8 +80,8 @@ class Scrape
                     "shippingDate" => '',
                 ];
 
-                $rawCapacity = $node->filter('.product-capacity')->text();
-                $productData['capacityMB'] = $this->convertToBytes($rawCapacity) / 1000 / 1000;
+                $rawCapacity = $node->filter('.product-capacity')->text('No capacity found');
+                $productData['capacityMB'] = $this->formatMegabytes($rawCapacity);
 
 
                 $prefix = 'Availability: ';
@@ -100,8 +109,6 @@ class Scrape
                 $this->products->add(new Product(...$productData));
             });
         });
-
-        var_dump(json_encode($this->products->toArray()));
 
         file_put_contents('output.json', json_encode($this->products->toArray()));
     }
