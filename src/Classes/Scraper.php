@@ -21,6 +21,15 @@ class Scraper
         $this->products = new \Ds\Set();
     }
 
+    /**
+     * Run the scraper process.
+     *
+     * This method fetches the first page of the product listing, determines the total 
+     * number of pages, and scrapes all pages sequentially. After scraping, it saves 
+     * the results to a JSON file.
+     *
+     * @return void
+     */
     public function run(): void
     {
         // Fetch the first document
@@ -44,6 +53,12 @@ class Scraper
 
     /**
      * Scrape all products from the provided document.
+     *
+     * This method extracts product nodes from the provided document and processes each 
+     * product and its variations, adding them to the products collection.
+     *
+     * @param Crawler $document The DOM document representing the current product listing page.
+     * @return void
      */
     private function scrapeProducts(Crawler $document): void
     {
@@ -65,6 +80,13 @@ class Scraper
 
     /**
      * Extract data for a single product from the node and variation.
+     *
+     * This method gathers all relevant data for a single product, including the title, price, 
+     * image URL, capacity, availability, color, and shipping information.
+     *
+     * @param Crawler $node The DOM node for the product.
+     * @param Crawler $productVariation The DOM node for the product variation.
+     * @return array An associative array containing product data.
      */
     private function extractProductData(Crawler $node, Crawler $productVariation): array
     {
@@ -88,6 +110,12 @@ class Scraper
 
     /**
      * Extract product price from the node.
+     *
+     * This method searches for the price within the product node and converts it into a `Cost` object.
+     * It accounts for various currency symbols by checking against the `CurrencySymbol` enum.
+     *
+     * @param Crawler $node The DOM node for the product.
+     * @return Cost The price of the product, stored in the smallest unit (e.g., pennies or cents).
      */
     private function extractPrice(Crawler $node): Cost
     {
@@ -107,6 +135,11 @@ class Scraper
 
     /**
      * Extract availability text from the product node.
+     *
+     * This method extracts the availability information (e.g., "In Stock", "Out of Stock") from the node.
+     *
+     * @param Crawler $node The DOM node for the product.
+     * @return string The availability text for the product.
      */
     private function extractAvailabilityText(Crawler $node): string
     {
@@ -115,7 +148,13 @@ class Scraper
     }
 
     /**
-     * Determine if the product is available based on the availability text.
+     * Determine if the product is available based on the availability text. If the text doesn't match the 
+     * expected "In Stock" text it is assumed to be out of stock.
+     *
+     * This method checks if the product is marked as "In Stock".
+     *
+     * @param Crawler $node The DOM node for the product.
+     * @return bool True if the product is available, false otherwise.
      */
     private function isProductAvailable(Crawler $node): bool
     {
@@ -125,6 +164,13 @@ class Scraper
 
     /**
      * Extract shipping information from the product node.
+     *
+     * This method uses a regular expression to find shipping-related information, such as free shipping,
+     * delivery dates, and any other relevant shipping details for the product.
+     *
+     * @param Crawler $node The DOM node for the product.
+     * @param array $productData The array to store the extracted shipping information.
+     * @return void
      */
     private function extractShippingInfo(Crawler $node, array &$productData): void
     {
@@ -153,6 +199,10 @@ class Scraper
 
     /**
      * Save the scraped products to a JSON file.
+     *
+     * This method serializes the collected product data and saves it to a JSON file for later use.
+     *
+     * @return void
      */
     private function saveToJson(): void
     {
