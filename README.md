@@ -31,7 +31,6 @@ This project leverages PHP's **enum** functionality (introduced in PHP 8.1) to r
 
 - **Automated Pagination Handling**:
   - Automatically detects and scrapes all available pages of the product catalog.
-  - Determines the total number of pages using the website’s pagination structure, ensuring complete data extraction across multiple pages.
 
 - **Product Data Extraction**:
   - Extracts essential product details including:
@@ -44,7 +43,7 @@ This project leverages PHP's **enum** functionality (introduced in PHP 8.1) to r
   
 - **Shipping Information Extraction**:
   - Extracts shipping-related details using regular expressions to match phrases like "Free Shipping", "Order within X hours", "Available on", and "Unavailable for delivery".
-  - Optionally captures dates (e.g., "2025-02-05" or "tomorrow") for delivery, using `Carbon` for date manipulation.
+  - Captures dates if they are available (e.g., "2025-02-05" or "tomorrow") for delivery, using `Carbon` for date manipulation.
 
 - **Currency-Agnostic Price Handling**:
   - Supports various currency symbols, including `£`, `$`, `€`, `¥`, and more.
